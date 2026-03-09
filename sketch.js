@@ -229,13 +229,12 @@ function preload() {
 
   fontImg = loadImage("assets/bitmapFont.png");
 
-  // --- LOAD SOUND EFFECTS ---
-  jump = loadSound("assets/sfx/jump.wav");
-  leafCollect = loadSound("assets/sfx/leafCollect.wav");
-  hitEnemy = loadSound("assets/sfx/hitEnemy.wav");
-  receiveDamage = loadSound("assets/sfx/receiveDamage.wav");
-  swing = loadSound("assets/sfx/swing.mp3");
-  music = loadSound("assets/sfx/music.wav");
+ jump = loadSound("./assets/sfx/jump.wav");
+leafCollect = loadSound("./assets/sfx/leafCollect.wav");
+hitEnemy = loadSound("./assets/sfx/hitEnemy.wav");
+receiveDamage = loadSound("./assets/sfx/receiveDamage.wav");
+swing = loadSound("./assets/sfx/swing.mp3");
+music = loadSound("./assets/sfx/music.wav");
 }
 
 function setup() {
