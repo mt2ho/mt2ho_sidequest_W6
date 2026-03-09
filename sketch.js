@@ -26,6 +26,10 @@
 let player, sensor;
 let playerImg;
 
+// --- PLAYER TRAIL EFFECT ---
+let trailPositions = [];
+let trailTimer = 0;
+
 let playerAnis = {
   idle: { row: 0, frames: 4, frameDelay: 10 },
   run: { row: 1, frames: 4, frameDelay: 3 },
@@ -58,7 +62,12 @@ const KNOCK_FRAMES = 30;
 let won = false;
 
 let ground, groundDeep, platformsL, platformsR, wallsL, wallsR;
-let groundTileImg, groundTileDeepImg, platformLCImg, platformRCImg, wallLImg, wallRImg;
+let groundTileImg,
+  groundTileDeepImg,
+  platformLCImg,
+  platformRCImg,
+  wallLImg,
+  wallRImg;
 
 let bgLayers = [];
 let bgForeImg, bgMidImg, bgFarImg;
@@ -173,7 +182,9 @@ const GLYPH_W = CELL * FONT_SCALE;
 const GLYPH_H = CELL * FONT_SCALE;
 
 const FONT_CHARS =
-  " !\"#$%&'()*+,-./0123456789:;<=>?@" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`" + "abcdefghijklmnopqrstuvwxyz{|}~";
+  " !\"#$%&'()*+,-./0123456789:;<=>?@" +
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`" +
+  "abcdefghijklmnopqrstuvwxyz{|}~";
 
 // gravity
 const GRAVITY = 10;
@@ -257,7 +268,11 @@ function draw() {
   camera.height = VIEWH;
 
   let targetX = constrain(player.x, VIEWW / 2, LEVELW - VIEWW / 2 - TILE_W / 2);
-  let targetY = constrain(player.y, VIEWH / 2 - TILE_H * 2, LEVELH - VIEWH / 2 - TILE_H);
+  let targetY = constrain(
+    player.y,
+    VIEWH / 2 - TILE_H * 2,
+    LEVELH - VIEWH / 2 - TILE_H,
+  );
 
   camera.x = Math.round(lerp(camera.x || targetX, targetX, 0.1));
   camera.y = Math.round(lerp(camera.y || targetY, targetY, 0.1));
@@ -267,7 +282,15 @@ function draw() {
 
   // --- PLAYER INPUT (disabled during knockback / death) ---
   // ATTACK
-  if (!dead && !won && knockTimer === 0 && !pendingDeath && grounded && !attacking && kb.presses("space")) {
+  if (
+    !dead &&
+    !won &&
+    knockTimer === 0 &&
+    !pendingDeath &&
+    grounded &&
+    !attacking &&
+    kb.presses("space")
+  ) {
     attacking = true;
     attackHitThisSwing = false;
     attackFrameCounter = 0;
@@ -278,7 +301,14 @@ function draw() {
   }
 
   // JUMP
-  if (!dead && !won && knockTimer === 0 && !pendingDeath && grounded && kb.presses("up")) {
+  if (
+    !dead &&
+    !won &&
+    knockTimer === 0 &&
+    !pendingDeath &&
+    grounded &&
+    kb.presses("up")
+  ) {
     player.vel.y = -1 * PLAYER_JUMP;
   }
 
@@ -292,7 +322,11 @@ function draw() {
   } else if (!dead && attacking) {
     attackFrameCounter++;
 
-    if (!attackHitThisSwing && attackFrameCounter >= 4 && attackFrameCounter <= 8) {
+    if (
+      !attackHitThisSwing &&
+      attackFrameCounter >= 4 &&
+      attackFrameCounter <= 8
+    ) {
       tryHitBoar();
     }
 
@@ -358,6 +392,22 @@ function draw() {
   if (invulnTimer > 0) invulnTimer--;
   if (knockTimer > 0) knockTimer--;
 
+  // --- UPDATE PLAYER TRAIL ---
+  trailTimer++;
+
+  if (trailTimer % 2 === 0) {
+    // every 2 frames
+    trailPositions.push({
+      x: player.x,
+      y: player.y,
+    });
+
+    // keep only last 6 positions
+    if (trailPositions.length > 6) {
+      trailPositions.shift();
+    }
+  }
+
   // --- ENTER DEAD (only once, after landing) ---
   if (!dead && pendingDeath && knockTimer === 0 && grounded) {
     dead = true;
@@ -410,13 +460,32 @@ function draw() {
 
   allSprites.draw();
 
+  // --- DRAW PLAYER TRAIL ---
+  push();
+  noFill();
+  stroke("rgba(255,255,255,0.35)");
+  strokeWeight(2);
+
+  for (let i = 0; i < trailPositions.length - 1; i++) {
+    const a = trailPositions[i];
+    const b = trailPositions[i + 1];
+
+    line(Math.round(a.x), Math.round(a.y), Math.round(b.x), Math.round(b.y));
+  }
+
+  pop();
+
   player.x = px;
   player.y = py;
   sensor.x = sx;
   sensor.y = sy;
 
   // --- HUD ---
-  if (score !== lastScore || health !== lastHealth || maxHealth !== lastMaxHealth) {
+  if (
+    score !== lastScore ||
+    health !== lastHealth ||
+    maxHealth !== lastMaxHealth
+  ) {
     redrawHUD();
     lastScore = score;
     lastHealth = health;
@@ -439,7 +508,10 @@ function draw() {
 
 function applyIntegerScale() {
   const c = document.querySelector("canvas");
-  const scale = Math.max(1, Math.floor(Math.min(window.innerWidth / VIEWW, window.innerHeight / VIEWH)));
+  const scale = Math.max(
+    1,
+    Math.floor(Math.min(window.innerWidth / VIEWW, window.innerHeight / VIEWH)),
+  );
   c.style.width = VIEWW * scale + "px";
   c.style.height = VIEWH * scale + "px";
 }
@@ -462,7 +534,17 @@ function drawBitmapTextToGfx(g, str, x, y, scale = FONT_SCALE) {
     const sx = col * CELL;
     const sy = row * CELL;
 
-    g.image(fontImg, Math.round(x + i * dw), Math.round(y), dw, dh, sx, sy, CELL, CELL);
+    g.image(
+      fontImg,
+      Math.round(x + i * dw),
+      Math.round(y),
+      dw,
+      dh,
+      sx,
+      sy,
+      CELL,
+      CELL,
+    );
   }
 }
 
@@ -564,7 +646,10 @@ function playerHitByBoar(player, e) {
 
 // --- PLAYER ATTACK -> BOAR ---
 function tryHitBoar() {
-  const grounded = sensor.overlapping(ground) || sensor.overlapping(platformsL) || sensor.overlapping(platformsR);
+  const grounded =
+    sensor.overlapping(ground) ||
+    sensor.overlapping(platformsL) ||
+    sensor.overlapping(platformsR);
   if (!grounded) return;
 
   const facingDir = player.mirror.x ? -1 : 1;
@@ -775,7 +860,12 @@ function updateGroundProbe(e) {
 
 function frontProbeHasGroundAhead(e) {
   const p = e.frontProbe;
-  return p.overlapping(ground) || p.overlapping(groundDeep) || p.overlapping(platformsL) || p.overlapping(platformsR);
+  return (
+    p.overlapping(ground) ||
+    p.overlapping(groundDeep) ||
+    p.overlapping(platformsL) ||
+    p.overlapping(platformsR)
+  );
 }
 
 function frontProbeHitsWall(e) {
@@ -792,7 +882,12 @@ function shouldTurnNow(e, dangerNow) {
 
 function boarGrounded(e) {
   const p = e.groundProbe;
-  return p.overlapping(ground) || p.overlapping(groundDeep) || p.overlapping(platformsL) || p.overlapping(platformsR);
+  return (
+    p.overlapping(ground) ||
+    p.overlapping(groundDeep) ||
+    p.overlapping(platformsL) ||
+    p.overlapping(platformsR)
+  );
 }
 
 // --- BOAR AI (simple + reliable) ---
@@ -925,7 +1020,12 @@ function updateBoars() {
     // 3) extra: turn if the "above" probe sees fire (early warning)
     const headSeesFire = e.footProbe.overlapping(fire);
 
-    const dangerNow = noGroundAhead || frontHitsLeaf || frontHitsFire || frontHitsWall || headSeesFire;
+    const dangerNow =
+      noGroundAhead ||
+      frontHitsLeaf ||
+      frontHitsFire ||
+      frontHitsWall ||
+      headSeesFire;
 
     if (e.turnTimer === 0 && shouldTurnNow(e, dangerNow)) {
       turnBoar(e, -e.dir); // already nudges + vel.x=0
