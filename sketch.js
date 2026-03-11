@@ -128,11 +128,11 @@ let level = [
   "      x     x    LggR    x                ", // row  2
   "     LR   LgR          LR               ", // row  3 (1)
   "   x  b        x   b  x                 ", // row  4
-  "   LgggR       LR   LgR  x      b        ", // row  5 (3)
-  "         LgR            ggg   LggggR    ", // row  6 (3)
+  "   LgggR       LR   LgR        b x       ", // row  5 (3)
+  "         LgR   x         ggg   LggggR    ", // row  6 (3)
   "  x           LgR                    x   ", // row  7
-  " LgR      b                  x       LggR", // row  8 (1)
-  "         LgR        x       LR  LgR     ", // row  9
+  " LgR      xb                  x       LggR", // row  8 (1)
+  "         LgR        x       LR  LgR    x ", // row  9
   "   x     [d]       LggR            [dd]", // row 10 (2)
   "LgggRLggggggR      Lgggg] dd     Lgggggggg", // row 11 (1)
   "dddddddddddddddddddddddddddddddddddddddd", // row 12
