@@ -128,11 +128,11 @@ let level = [
   "      x     x    LggR    x                ", // row  2
   "     LR   LgR          LR               ", // row  3 (1)
   "   x  b        x   b  x                 ", // row  4
-  "   LgggR       LR   LgR        b x       ", // row  5 (3)
+  "   LgggR       LRg   LgR        b x       ", // row  5 (3)
   "         LgR   x         ggg   LggggR    ", // row  6 (3)
-  "  x           LgR                    x   ", // row  7
+  " f x           LgR                    x f  ", // row  7
   " LgR      xb                  x       LggR", // row  8 (1)
-  "         LgR        x       LR  LgR    x ", // row  9
+  "         LgR        x  f     LR  LgR    x ", // row  9
   "   x     [d]       LggR            [dd]", // row 10 (2)
   "LgggRLggggggR      Lgggg] dd     Lgggggggg", // row 11 (1)
   "dddddddddddddddddddddddddddddddddddddddd", // row 12
@@ -172,8 +172,8 @@ const BOAR_H = 12;
 const BOAR_SPEED = 0.6;
 const BOAR_HP = 3;
 
-const BOAR_KNOCK_FRAMES = 7;
-const BOAR_KNOCK_X = 1.2;
+const BOAR_KNOCK_FRAMES = 10;
+const BOAR_KNOCK_X = 1.3;
 const BOAR_KNOCK_Y = 1.6;
 const BOAR_FLASH_FRAMES = 5;
 
